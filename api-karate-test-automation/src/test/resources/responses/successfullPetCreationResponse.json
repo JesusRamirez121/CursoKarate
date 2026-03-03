@@ -1,0 +1,10 @@
+{
+  "status": "success",
+  "message": "Pet created",
+  "data": {
+    "id": #number,
+    "name": "#(name)",
+    "type": "#(type)",
+    "age": #(parseInt(age))
+  }
+}
