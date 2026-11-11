@@ -42,5 +42,5 @@ La URL base está en `src/test/resources/karate-config.js` (`http://localhost:30
 - JUnit XML: `build/test-results/test/`
 
 ## Notas
-- Las pruebas crean y borran mascotas en el servicio demo. Si una ejecución se corta a mitad, pueden quedar mascotas de prueba en `pets-demo/pets.json`.
+- Cada escenario borra las mascotas que crea, así que `pets-demo/pets.json` no cambia al ejecutar las pruebas. Si una ejecución se corta a mitad, pueden quedar mascotas de prueba; en ese caso restaurar con `git checkout -- pets-demo/pets.json`.
 - La integración continua está en `.github/workflows/karate-test.yml` (raíz del repositorio): levanta el servicio demo y ejecuta `./gradlew test`.
