@@ -1,0 +1,51 @@
+name: Karate API tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  karate-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api-karate-test-automation
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install and start the demo service
+        working-directory: pets-demo
+        run: |
+          npm ci
+          nohup node app.js > pets-server.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -s -o /dev/null http://localhost:3001/ && break
+            sleep 1
+          done
+          curl -s -o /dev/null -w "demo service HTTP %{http_code}\n" http://localhost:3001/
+
+      - name: Run Karate tests (Gradle)
+        run: ./gradlew --no-daemon test
+
+      - name: Archive Karate reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: karate-reports
+          path: |
+            api-karate-test-automation/build/karate-reports/
+            api-karate-test-automation/build/test-results/
